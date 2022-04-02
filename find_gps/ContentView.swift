@@ -14,48 +14,65 @@ import MapKit
 
 
 struct ContentView: View {
-  
+ 
     @StateObject  var viewModel = ContentViewModel()
-    @State  var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
-                                                   span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
-   // @State var latx: Double
+ //   @State  var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
+  //                                                 span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+    @State var coordinates: (lat: Double, lon: Double) = (0,0)
     var body: some View {
-        
-        Map(coordinateRegion: $region, showsUserLocation: true)
+       // viewModel.GetLatLong()
+        let coordinatesx = CLLocationManager().location?.coordinate.latitude
+        let latitude = CLLocationManager().location?.coordinate.latitude
+            let longitude = CLLocationManager().location?.coordinate.longitude
+     //   let coordinate = CLLocationManager.location?.coordinate
+     //   Text("\(coordinate.latitude)")
+        Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
+            
             .ignoresSafeArea()
             .accentColor(Color(.systemPink))
+            .onTapGesture {
+                viewModel.GetLatLong()
+            }
             .onAppear {
                 viewModel.checkiflocationservicesisenabled()
                 viewModel.GetLatLong()
+                
                 }
        
       
-        
-        Text("Lat: \(viewModel.latitude)")
-        Text("Long: \(viewModel.longtitude)")
-        Text("Stat: \(viewModel.stat)")
-        Text("Stat2 sd b 3: \(viewModel.stat2)")
+   //     Text("Lat: \(coordinatesx.description)")
+    //    Text("Lat: \(ContentViewModel.CLLocationManager().location?.coordinate.latitude)")
+        Text("Long: \(viewModel.GetLatLong())")
+     //   Text("Stat: \(viewModel.stat)")//    Text("Stat2 sd b 3: \(viewModel.stat2)")
+    //    print("Lat: \(viewModel.GetLatLong()")
+ //       print("Long: \(viewModel.longtitude)")
+  //      print("Stat: \(viewModel.stat)")
+  //      print("Stat2 sd b 3: \(viewModel.stat2)")
     }
     
     
 }
-        
+
+
+
 class ContentViewModel: NSObject, ObservableObject,
 CLLocationManagerDelegate{
- 
+    @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
+                                                   span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
     var locationManager: CLLocationManager?
-    @State var latitude = 0.0
-    @State  var longtitude = 0.0
+    @State var latitude: Double = 0.0
+    @State  var longtitude: Double = 0.0
     @State var stat = 0
     @State var stat2 = 0
     
-    func GetLatLong()
+    func GetLatLong() -> Double
     {
      
         let latitude = CLLocationManager().location?.coordinate.latitude
-            let longitude = CLLocationManager().location?.coordinate.longitude
+        let longitude = CLLocationManager().location?.coordinate.longitude
         print("lat: \(latitude)")
         stat2 = 3
+        return latitude ?? 0
     }
     func checkiflocationservicesisenabled()
     {
@@ -89,6 +106,7 @@ CLLocationManagerDelegate{
             print("you have denied permission for this app.. plz go into app allow")
             stat = 3
         case .authorizedAlways:
+            region = MKCoordinateRegion(center: locationManager.location!.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
             stat = 4
                 break
             
