@@ -42,7 +42,10 @@ struct ContentView: View {
       
    //     Text("Lat: \(coordinatesx.description)")
     //    Text("Lat: \(ContentViewModel.CLLocationManager().location?.coordinate.latitude)")
-        Text("Long: \(viewModel.GetLatLong())")
+        let result = viewModel.GetLatLong()
+        Text("Lat: \(result.0)")
+        Text("long: \(result.1)")
+     //   Text("Long: \(viewModel.GetLatLong())")
      //   Text("Stat: \(viewModel.stat)")//    Text("Stat2 sd b 3: \(viewModel.stat2)")
     //    print("Lat: \(viewModel.GetLatLong()")
  //       print("Long: \(viewModel.longtitude)")
@@ -59,20 +62,24 @@ class ContentViewModel: NSObject, ObservableObject,
 CLLocationManagerDelegate{
     @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
                                                    span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+    
     var locationManager: CLLocationManager?
-    @State var latitude: Double = 0.0
-    @State  var longtitude: Double = 0.0
+    @State var latitude: Double = -90.20
+    @State  var longtitude: Double = 30.20
     @State var stat = 0
     @State var stat2 = 0
-    
-    func GetLatLong() -> Double
+    var lat1: Double { return -90.20 }
+//    @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: lat1 , longitude: longtitude),
+ //                                                      span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+    func GetLatLong() -> (Double, Double)
     {
-     
+ 
+        locationManager?.startUpdatingLocation()
         let latitude = CLLocationManager().location?.coordinate.latitude
         let longitude = CLLocationManager().location?.coordinate.longitude
         print("lat: \(latitude)")
         stat2 = 3
-        return latitude ?? 0
+        return (latitude ?? 0, longitude ?? 0)
     }
     func checkiflocationservicesisenabled()
     {
