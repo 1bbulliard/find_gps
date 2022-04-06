@@ -10,47 +10,40 @@ import CoreLocation
 import CoreLocationUI
 
 import MapKit
-
-
+// i'm using this as a model https://www.youtube.com/watch?v=hWMkimzIQoU&t=1275s
 
 struct ContentView: View {
  
-    @StateObject  var viewModel = ContentViewModel()
- //   @State  var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
-  //                                                 span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
-    @State var coordinates: (lat: Double, lon: Double) = (0,0)
+ //   @StateObject  var viewModel = ContentViewModel()
+    @ObservedObject var viewModel = ContentViewModel()
+ 
     var body: some View {
-       // viewModel.GetLatLong()
-        let coordinatesx = CLLocationManager().location?.coordinate.latitude
-        let latitude = CLLocationManager().location?.coordinate.latitude
-            let longitude = CLLocationManager().location?.coordinate.longitude
-     //   let coordinate = CLLocationManager.location?.coordinate
-     //   Text("\(coordinate.latitude)")
+       
         Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
             
             .ignoresSafeArea()
             .accentColor(Color(.systemPink))
             .onTapGesture {
                 viewModel.GetLatLong()
+                viewModel.checkiflocationservicesisenabled()
+                viewModel.checkLocationAuthorization()
+              //  viewModel.locationManager?.startUpdatingLocation()
             }
             .onAppear {
                 viewModel.checkiflocationservicesisenabled()
                 viewModel.GetLatLong()
-                
+                viewModel.checkLocationAuthorization()
+              //  viewModel.locationManager?.startUpdatingLocation()
                 }
        
       
-   //     Text("Lat: \(coordinatesx.description)")
-    //    Text("Lat: \(ContentViewModel.CLLocationManager().location?.coordinate.latitude)")
+      //  viewModel.checkiflocationservicesisenabled()
+     //   viewModel.checkLocationAuthorization()
+        
         let result = viewModel.GetLatLong()
         Text("Lat: \(result.0)")
         Text("long: \(result.1)")
-     //   Text("Long: \(viewModel.GetLatLong())")
-     //   Text("Stat: \(viewModel.stat)")//    Text("Stat2 sd b 3: \(viewModel.stat2)")
-    //    print("Lat: \(viewModel.GetLatLong()")
- //       print("Long: \(viewModel.longtitude)")
-  //      print("Stat: \(viewModel.stat)")
-  //      print("Stat2 sd b 3: \(viewModel.stat2)")
+     
     }
     
     
@@ -64,13 +57,16 @@ CLLocationManagerDelegate{
                                                    span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
     
     var locationManager: CLLocationManager?
-    @State var latitude: Double = -90.20
-    @State  var longtitude: Double = 30.20
+    override init()
+    {
+        super.init()
+        locationManager?.delegate = self
+    }
+
     @State var stat = 0
     @State var stat2 = 0
-    var lat1: Double { return -90.20 }
-//    @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: lat1 , longitude: longtitude),
- //                                                      span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+    
+  
     func GetLatLong() -> (Double, Double)
     {
  
@@ -86,13 +82,7 @@ CLLocationManagerDelegate{
         if CLLocationManager.locationServicesEnabled() {
             locationManager = CLLocationManager()
             locationManager!.delegate = self
-        //    let x = locationManager?.location
-         //   let latitude = x?.coordinate.latitude
-         //   let longtitude = x?.coordinate.longitude
-            let latitude = CLLocationManager().location?.coordinate.latitude
-                let longitude = CLLocationManager().location?.coordinate.longitude
-            print("lat: \(latitude)")
-                checkLocationAuthorization()
+          
         } else {
             print("show an alert")
         }
@@ -119,6 +109,9 @@ CLLocationManagerDelegate{
             
         case
           .authorizedWhenInUse:
+            region = MKCoordinateRegion(center: locationManager.location!.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+            locationManager.startUpdatingLocation()
+            
             stat = 5
             break
         @unknown default:
