@@ -220,18 +220,19 @@ struct EnvironmentViewModel51: View {
             }
         }
         //try this
-        ScrollView {
+        
+  //      ScrollView {
         VStack {
             Text("Please enter your phone number to help: ")
         TextField("Please enter your number to help:", text: $num)
          //   .keyboardType(.decimalPad)
           // Text("If you need a tow, let me know!!")
             
-        Text("\(num)")
+      //  Text("\(num)")
         //addity(parm1: num)
       //  viewModel.dataArray.append("\(num)")
 }
-}
+//}
     }
     func addity(parm1: String) {
         @EnvironmentObject var viewModel: EnvironmentViewModel
@@ -302,7 +303,8 @@ struct FinalView: View {
 // end
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+       // ContentView()
+    EnvironmentViewModel51()
     }
 }
 
