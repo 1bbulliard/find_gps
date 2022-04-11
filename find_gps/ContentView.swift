@@ -53,6 +53,8 @@ struct ContentView: View {
         Text("long: \(result.1)")
         Spacer()
       //  ScrollView {
+            Text("Click below to find phone numbers of folks who can provide you assistance:")
+            Text("You will also be able to enter your own number so you can provide assistance")
         NavigationView{
             NavigationLink("Click here for assistance:-->",
                            destination: EnvironmentViewModel51())
