@@ -13,16 +13,16 @@ import MapKit
 // i'm using this as a model https://www.youtube.com/watch?v=hWMkimzIQoU&t=1275s
 
 struct ContentView: View {
- 
- //   @StateObject  var viewModel = ContentViewModel()
-    @ObservedObject var viewModel = ContentViewModel()
+//    @ObservableObject var lat: Double
+    @StateObject  var viewModel = ContentViewModel()
+//    @ObservedObject var viewModel = ContentViewModel()
     
     
     var body: some View {
       //  ScrollView{
 //NavigationView{
         VStack {
-           // ZStack{
+          //  ZStack{
         Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
             
             .ignoresSafeArea()
@@ -51,59 +51,25 @@ struct ContentView: View {
         let result = viewModel.GetLatLong()
         Text("Lat: \(result.0)")
         Text("long: \(result.1)")
-        Spacer()
+      //  Spacer()
       //  ScrollView {
-            Text("Click below to find phone numbers of folks who can provide you assistance:")
-            Text("You will also be able to enter your own number so you can provide assistance")
+            
         NavigationView{
             NavigationLink("Click here for assistance:-->",
                            destination: EnvironmentViewModel51())
-            NavigationLink("Please go here for assistance-->",
-                           destination: nextview())
+         
         }
-// Spacer()
-      //  }
-  //   Text("If you need a tow, let me know!!")
-   //     Text("heres phone numbers that can help:")
-  //      Text("3372777378")
-  //      Text("3372778386")
-    }
-    
-    
-//}
- //   }
-    }
-struct nextview: View {
+
  
- //   @StateObject  var viewModel = ContentViewModel()
- //   @ObservedObject var viewModel = ContentViewModel()
-    @EnvironmentObject var viewModel: EnvironmentViewModel
-    @State var num = ""
-    var body: some View {
-        TextField("Please enter your number to help:", text: $num)
-         //   .keyboardType(.decimalPad)
-           Text("If you need a tow, let me know!!")
-              Text("heres phone numbers that can help:")
-             Text("3372777378")
-             Text("3372778386")
-        Text("\(num)")
-            .onAppear  {
-                
-                EnvironmentViewModel51()
-              //  addit(parm1: num)
-                
-            }
-        
     }
-}
-func additx(parm1: String) {
-    @EnvironmentObject var viewModel: EnvironmentViewModel
-    @ObservedObject var ViewModel: EnvironmentViewModel
-   // @ObservedObject var progress: UserProgress
-    viewModel.dataArray.append("\(parm1)")
-      //  .environmentObject(viewModel)
     
-}
+    
+
+
+    }
+   
+
+
 class ContentViewModel: NSObject, ObservableObject,
 CLLocationManagerDelegate{
     @Published var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 30.20, longitude: -92.01),
@@ -177,17 +143,39 @@ CLLocationManagerDelegate{
     }
     
 }
-// begin
-class EnvironmentViewModel: ObservableObject {
-    @Published var dataArray: [String] = []
-    init() {
-      getData()
-    }
 
+    
+    struct DataArray: Identifiable, Hashable {
+        let id: String = UUID().uuidString
+        let numbr: String
+        let gps: Double
+        let gps2: Double
+    }
+    class EnvironmentViewModel: ObservableObject{
+        @Published var dataArray: [DataArray] = []
+        @Published var do_once = true
+   //maybe
+           @ObservedObject var viewModel = ContentViewModel()
+        
+        init() {
+            getData()
+        }
         func getData() {
-          //  self.dataArray.append("iphone")
-          //  self.dataArray.append("ipad")
-            self.dataArray.append(contentsOf: ["3372777378", "3378455489", "3372778454"])
+            
+            let x = DataArray(numbr: "3372777878",gps: 33, gps2: 90)
+            dataArray.append(contentsOf: [x])
+            let y = DataArray(numbr: "3372771234",gps: 31, gps2: 90)
+            dataArray.append(contentsOf: [y])
+            
+        }
+        func additz(parm1: String) {
+            let result = viewModel.GetLatLong()
+          //  Text("Lat: \(result.0)")
+          //  Text("long: \(result.1)")
+            let y = DataArray(numbr: "\(parm1)",gps: result.0, gps2: result.1)
+            dataArray.append(contentsOf: [y])
+       
+            
         }
     }
 
@@ -199,107 +187,54 @@ struct EnvironmentViewModel51: View {
 // To each sub view, add:
 //      @EnvironmentObject var viewModel: EnvironmentViewModel
     
-    @StateObject var viewModel:EnvironmentViewModel = EnvironmentViewModel()
+//    @StateObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
+    @ObservedObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
+    
+ //   @StateObject var viewModelx: [EnvironmentViewModel] = []
     @State var num = ""
+    @State private var showingPopover = false
     var body: some View {
-        VStack {
+      //  ScrollView {
+        VStack
+        {
+       //  Text("Phone numbers to call for help:")
             NavigationView {
-                List
-                {
+                List {
+                   
+                ForEach(viewModelx.dataArray, id: \.self){item in
                     
-                    ForEach(viewModel.dataArray, id: \.self){item in
-                        NavigationLink (destination: DetailView(selectedItem: item),
-                                        label: {
-                            Text(item)
-                            //Text(item)
-                        }
-                        )
+                    Text("--> \(item.numbr) GPS:  \(item.gps) \(item.gps2)"
                         
+                    )
+                    .font(.system(size: 12, weight: .medium, design: .default))
+                
                     }
-                }
-                .navigationTitle("Phone numbers to Call:")
-                .environmentObject(viewModel)
+               // .navigationBarHidden(true)
+                .navigationTitle("Phone numbers to Call for help:")
+                .navigationBarTitleDisplayMode(.inline)
+           
+            }
             }
         }
-        //try this
-        
-  //      ScrollView {
-        VStack {
-            Text("Please enter your phone number to help: ")
-        TextField("Please enter your number to help:", text: $num)
-         //   .keyboardType(.decimalPad)
-          // Text("If you need a tow, let me know!!")
+      //  }
+       
+//        VStack {
+//            Text("Please enter your phone number to help: ")
+            TextField("Please enter your number to help:", text: $num)
+            Button("Save your number") {
+                viewModelx.additz(parm1: num)
+               
+                         }
             
-      //  Text("\(num)")
-        //addity(parm1: num)
-      //  viewModel.dataArray.append("\(num)")
+ //
+//        }
+
+    }
+  //  }
+
 }
-//}
-    }
-    func addity(parm1: String) {
-        @EnvironmentObject var viewModel: EnvironmentViewModel
-        @ObservedObject var ViewModel: EnvironmentViewModel
-       // @ObservedObject var progress: UserProgress
-        viewModel.dataArray.append("\(parm1)")
-          //  .environmentObject(viewModel)
-        
-    }
-}
-struct DetailView: View {
-    
-    //note: this view doesnt use the environment , but just passes one item
-    // to this view
-    let selectedItem: String
-    
-    var body: some View {
-        ZStack{
-        
-        Color.orange.ignoresSafeArea()
-            //
-            NavigationLink(
-                destination: FinalView(),
-                label: {
-                    Text(selectedItem)
-                        
-                    .font(.headline)
-                .foregroundColor((.orange))
-                .padding()
-                .padding()
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(30)
-                }
-            )
-                }
-            
-            //
-            
-            
-        }
-    }
 
 
-struct FinalView: View {
-    @EnvironmentObject var viewModel: EnvironmentViewModel
-    
-    var body: some View {
-        ZStack {
-            LinearGradient(colors: [Color.red, Color.blue],
-                           startPoint: .leading,
-                           endPoint: .trailing)
-            .ignoresSafeArea()
-            ScrollView{
-                VStack(spacing: 20){
-                    ForEach(viewModel.dataArray, id:\.self) {item in
-                        Text(item)
-                    }
-                    .environmentObject(viewModel)
-                }
-            }
-            
-        }
-    }
-}
 
 
 // end
