@@ -16,8 +16,8 @@ struct ContentView: View {
     //    @ObservableObject var lat: Double
     @StateObject  var viewModel = ContentViewModel()
     //    @ObservedObject var viewModel = ContentViewModel()
-    
-    
+    //@ObservedObject var viewModelx:EnvironmentViewModel
+    @StateObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
     var body: some View {
         //  ScrollView{
         NavigationView{
@@ -51,7 +51,7 @@ struct ContentView: View {
       //      move navigation view up
         //    NavigationView{
                 NavigationLink("Click here for assistance:-->",
-                               destination: EnvironmentViewModel51())
+                               destination: EnvironmentViewModel51(viewModelx: viewModelx))
                 
             }
             
@@ -183,9 +183,9 @@ struct ContentView: View {
         //      @EnvironmentObject var viewModel: EnvironmentViewModel
         
         //    @StateObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
-        @ObservedObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
-        
-        //   @StateObject var viewModelx: [EnvironmentViewModel] = []
+        // should be state i think
+         @ObservedObject var viewModelx:EnvironmentViewModel
+      //  @StateObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
         @State var num = ""
         @State private var showingPopover = false
         @State private var showingAlert = false
@@ -242,8 +242,8 @@ struct ContentView: View {
     // end
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
-            // ContentView()
-            EnvironmentViewModel51()
+             ContentView()
+          //  EnvironmentViewModel51(viewModelx: viewModelx))
         }
     }
     
