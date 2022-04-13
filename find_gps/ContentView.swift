@@ -42,7 +42,9 @@ struct ContentView: View {
                     //  viewModel.locationManager?.startUpdatingLocation()
                 }
             
-           
+           Text("This app will provide numbers to you of people who have volunteered to help if you need assistance (example tow).  You may also add your number to provide assistance to other folks.  Click button below please.")
+                .font(.system(size: 9, weight: .light, design: .rounded))
+            Divider()
             
             let result = viewModel.GetLatLong()
             Text("Lat: \(result.0)")
@@ -243,7 +245,7 @@ struct ContentView: View {
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
              ContentView()
-          //  EnvironmentViewModel51(viewModelx: viewModelx))
+          //  EnvironmentViewModel51(viewModelx: viewModelx);)
         }
     }
     
