@@ -151,6 +151,7 @@ struct ContentView: View {
     class EnvironmentViewModel: ObservableObject{
         @Published var dataArray: [DataArray] = []
         @Published var do_once = true
+    //    let container: NSPersistantContainer
         //maybe
         @ObservedObject var viewModel = ContentViewModel()
         
@@ -171,6 +172,14 @@ struct ContentView: View {
             //  Text("long: \(result.1)")
             let y = DataArray(numbr: "\(parm1)",gps: result.0, gps2: result.1)
             dataArray.append(contentsOf: [y])
+            
+            
+        }
+        func deletegps(indexset: IndexSet) {
+            guard let index =  indexset.first else {return}
+         //   let entity = dataArray [index]
+            dataArray.remove(at: index)
+          
             
             
         }
@@ -210,10 +219,12 @@ struct ContentView: View {
                             
                         }
                         
+                        .onDelete (perform: viewModelx.deletegps)
                         .navigationTitle("Phone numbers to Call for help:")
                         .navigationBarTitleDisplayMode(.inline)
                         
                     }
+                   
                 }
                 //   .frame(width:400, height: 212, alignment: .leading)
             }
@@ -224,6 +235,7 @@ struct ContentView: View {
             TextField("Please enter your number to help:", text: $num)
             Button("Save your number") {
                 viewModelx.additz(parm1: num)
+                num = ""
                 showingAlert = true
                             }
             .alert("Thanks for adding your name to help others!!", isPresented: $showingAlert) {
