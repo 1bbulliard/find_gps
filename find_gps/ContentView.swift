@@ -13,16 +13,15 @@ import MapKit
 // i'm using this as a model https://www.youtube.com/watch?v=hWMkimzIQoU&t=1275s
 
 struct ContentView: View {
-    //    @ObservableObject var lat: Double
+    
     @StateObject  var viewModel = ContentViewModel()
-    //    @ObservedObject var viewModel = ContentViewModel()
-    //@ObservedObject var viewModelx:EnvironmentViewModel
+    
     @StateObject var viewModelx:EnvironmentViewModel = EnvironmentViewModel()
     var body: some View {
-        //  ScrollView{
+     
         NavigationView{
         VStack {
-            //  ZStack{
+    
             Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
             
                 .ignoresSafeArea()
@@ -205,29 +204,38 @@ struct ContentView: View {
             //  ScrollView {
             VStack
             {
-                //  Text("Phone numbers to call for help:")
+            //      Text("Click a phone number to request help:")
+              //      .font(.system(size: 12, weight: .semibold, design: .default))
                 NavigationView {
-                    
+                  //       Text("Click a phone number to request help:")
+                    //       .font(.system(size: 12, weight: .semibold, design: .default))
                     List {
                         
                         ForEach(viewModelx.dataArray, id: \.self){item in
-                            
-                            Text("--> \(item.numbr) GPS:  \(item.gps) \(item.gps2)"
-                                 
+                            NavigationLink (destination: messview(selectedItem: item.numbr, lat: item.gps, longt: item.gps2),
+                                            label: {
+                                Text("--> \(item.numbr) GPS:  \(item.gps) \(item.gps2)")
+                         
+                                    .font(.system(size: 12, weight: .medium, design: .default))
+                                                                
+                                                                                        
+                            }
+                                
                             )
-                            .font(.system(size: 12, weight: .medium, design: .default))
                             
                         }
-                        
                         .onDelete (perform: viewModelx.deletegps)
-                        .navigationTitle("Phone numbers to Call for help:")
-                        .navigationBarTitleDisplayMode(.inline)
-                        
-                    }
+                    //    .navigationTitle("Phone numbers to Call for help:")
+                      //  .navigationBarTitle(Text("Phone numbers to call for help:").font(.custom(8))
+                        .navigationBarTitle (Text("Click phone num to request help:"), displayMode: .inline)
+
+                            
+                                                    }
+                    
+                }
                    
                 }
-                //   .frame(width:400, height: 212, alignment: .leading)
-            }
+            
             
             
             
@@ -249,11 +257,35 @@ struct ContentView: View {
         //  }
         
     }
+    struct messview: View {
+                                let selectedItem: String
+        let lat: Double
+        let longt: Double
+     //   @State parm2: String = "Please provide help"
+        @State var parm2 = "Please provide help"
+        @ObservedObject var viewModel = ContentViewModel()
+        var body: some View {
+         
+            NavigationView{
+                VStack {
+                    Text("Text message this number for help below: \(selectedItem)")
+                    Button("send") {
+                        sendmessage(parm1: selectedItem, parm2: parm2, parm3: lat, parm4: longt)
+                    }
+                           }
+            }
+        }
+        func sendmessage(parm1: String, parm2: String, parm3: Double, parm4: Double) {
+            let result = viewModel.GetLatLong()
+            let sms: String = "sms:\(parm1)&body=\(parm2) at lat:  \(result.0)  Longt: \(result.1)"
+                let strurl: String =  sms.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                UIApplication.shared.open(URL.init(string:strurl)!, options: [:], completionHandler: nil)
+            }
+    }
     
     
-    
-    
-    // end
+
+
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
              ContentView()
